@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>Memory Game</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <section class="memory-game">
+    
+    <div id="card1" onclick="timer1()" class="memory-card" >
+      <img id="card1-img" class="front-face" src="img/1.jpg"  />
+      <img class="back-face" src="img/10.jpg" alt="Teste" />
+      <input type="hidden" id="card1-ipt" name="card1-ipt" value="square">
+    </div>
+    <div id="card2" onclick="timer2()" class="memory-card" >
+      <img id="card2-img" class="front-face" src="img/1.jpg"  />
+      <img class="back-face" src="img/10.jpg" alt="Teste" />
+      <input type="hidden" id="card2-ipt" name="card2-ipt" value="circle">
+    </div>
+
+    <div id="card3" onclick="timer3()" class="memory-card" >
+      <img id="card3-img" class="front-face" src="img/1.jpg" />
+      <img id="c3-bk" class="back-face" src="img/10.jpg" alt="Teste" />
+      <input type="hidden" id="card3-ipt" name="card3-ipt" value="circle">
+    </div>
+    <div id="card4" onclick="timer4()" class="memory-card" >
+      <img id="card4-img" class="front-face" src="img/1.jpg" />
+      <img class="back-face" src="img/10.jpg" alt="Teste" />
+      <input type="hidden" id="card4-ipt" name="card4-ipt" value="square">
+    </div>
+
+    <p style="font-size: 1.8em;" > As cartas destacadas são iguais?</p>
+
+    <p><button id="btn_sim" class="button" onclick="sim()" style=" opacity: 0.5;" disabled="true"> Sim </button>
+    <button id="btn_nao" class="button" onclick="nao()" style="opacity: 0.5;"  disabled="true"> Não </button></p>
+
+    <button id="comecar" class="button" style="margin-left: 170px;" onclick="inicio()"> Começar </button>
+    
+    <p>
+    <div style="font-size: 1.8em;" style="margin-left: 100px;">  Pontuação :  </div>
+    <div id="pontuacao" style="font-size: 1.8em;" style="margin-left: 100px;">  0  </div>
+
+    <div style="font-size: 1.8em;margin-left: 300px;">  Tempo :  </div>
+    <div id="tempo" style="font-size: 1.8em;">  60  </div>
+
+    <button style="visibility:hidden" type="button" id="btn-modal" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+      Launch demo modal
+    </button>
+  </p>
+  </section>
+
+  <input type="hidden" id="rodada" name="rodada" value="1">
+  <input type="hidden" id="partida" name="partida" value="1">
+  <input type="hidden" id="pontuacao_ipt" name="pontuacao_ipt" value="0">
+
+  <!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Rodada Finalizada!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-bd">
+        <p> Suas pontuações </p>
+      </div>
+      <div class="modal-footer">
+        <button  type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <script src="script.js"></script>
+  <script src="animacao.js"></script>
+  <script>
+
+      function crono() {
+        var secs = 61;
+        function cronometro() {
+          secs--;
+          document.getElementById("tempo").innerHTML = secs;
+          if ( secs == 0)
+            clearInterval(id);
+            //fim();
+            if(document.getElementById("tempo").innerHTML == "0"){
+              fim();
+            }
+            if(document.getElementById("tempo").innerHTML == "55" && document.getElementById("rodada").value == "1"){
+              proximo();
+            }
+          }
+         var id = setInterval(cronometro, 1000);
+      }
+
+
+     
+
+      function inicio(){
+        crono();
+        randomizeCards();
+       // animacaoRodada();
+        document.getElementById("comecar").disabled = "true";
+        document.getElementById("comecar").style.visibility = "hidden";
+        document.getElementById("btn_sim").style.opacity = "1";
+        document.getElementById("btn_sim").disabled = "";
+        document.getElementById("btn_nao").style.opacity = "1";
+        document.getElementById("btn_nao").disabled = "";
+        my_time=setTimeout("flipCard('card2');",1000);
+        my_time=setTimeout("flipCard('card3');",1000);
+        my_time=setTimeout("flipCard('card4');",1000);
+      }
+
+      function sim(){
+        var v1 = document.getElementById("card3-ipt").value;
+        var v2 = document.getElementById("card2-ipt").value;
+        if (v1 == v2) {
+          computaPontuacao();
+          proximo();
+        }
+        else {
+          proximo();
+        }
+      }
+
+      function nao(){
+        var v1 = document.getElementById("card3-ipt").value;
+        var v2 = document.getElementById("card2-ipt").value;
+        if (v1 != v2) {
+          computaPontuacao();
+          proximo();
+        }
+        else {
+          proximo();
+        }
+        
+      }
+
+      function proximo(){
+        unFlipCard('card2')
+        unFlipCard('card3')
+        unFlipCard('card4')
+        document.getElementById("rodada").value = 2;
+        animacaoRodada();
+        my_time=setTimeout('nextRound()',500);
+        my_time=setTimeout("flipCard('card2');",1000);
+      }
+      
+      function computaPontuacao(){
+        var p = parseInt(document.getElementById("pontuacao_ipt").value);
+        console.log(p);
+        p = p + 1;
+        document.getElementById("pontuacao_ipt").value = p;
+        document.getElementById("pontuacao").innerHTML= p;
+        //alert("acertou!");
+      }
+
+      function fim(){
+        my_time=setTimeout("unFlipCard('card1');",1000);
+        my_time=setTimeout("unFlipCard('card2');",1000);
+        my_time=setTimeout("unFlipCard('card3');",1000);
+        my_time=setTimeout("unFlipCard('card4');",1000);
+        // unFlipCard('card1')
+        // unFlipCard('card2')
+        // unFlipCard('card3')
+        // unFlipCard('card4')
+        document.getElementById("comecar").disabled = "";
+        document.getElementById("comecar").style.visibility = "";
+        
+        document.getElementById("btn_sim").style.opacity = "0.5";
+        document.getElementById("btn_nao").style.opacity = "0.5";
+
+        document.getElementById("btn_sim").disabled = "";
+        document.getElementById("btn_nao").disabled = "";
+
+        document.getElementById("c3-bk").src="img/10.jpg";
+        var p = document.getElementById("pontuacao_ipt").value;
+        //alert("Sua pontuação foi de " + p)
+        document.getElementById("pontuacao").innerHTML= "0";
+        document.getElementById("pontuacao_ipt").value= "0";
+        document.getElementById("tempo").innerHTML= "60";
+        var partida = document.getElementById("partida").value;
+        var body = document.getElementById('modal-bd');
+        document.getElementById('modal-bd').innerHTML = document.getElementById('modal-bd').innerHTML + "<p> Rodada " + partida + " --> <strong>" + p + "</strong></p>";
+        var link = document.getElementById('btn-modal');
+        link.click();
+
+        document.getElementById("partida").value = parseInt(document.getElementById("partida").value) + 1;
+
+      }
+
+  </script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
